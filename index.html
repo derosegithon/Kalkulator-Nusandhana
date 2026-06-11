@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator NUSANDHANA Baja Ringan Primaland</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --zinc:#E9EDEF;          /* latar galvalume */
+    --panel:#FFFFFF;
+    --ink:#1C2733;           /* baja biru gelap */
+    --steel:#3A5670;         /* biru baja */
+    --hot:#E8590C;           /* oranye baja panas */
+    --line:#C9D2D8;
+    --ok:#1E7F4F;
+    --radius:10px;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Barlow',sans-serif;color:var(--ink);
+    background:
+      repeating-linear-gradient(90deg, rgba(58,86,112,.045) 0 1px, transparent 1px 72px),
+      var(--zinc);
+    min-height:100vh;padding:20px 14px 60px;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  header{
+    display:flex;align-items:center;gap:16px;
+    margin-bottom:18px;border-left:5px solid var(--hot);padding-left:14px;
+  }
+  header .logo{
+    width:74px;height:74px;flex-shrink:0;border-radius:50%;
+    background:#fff;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+  }
+  header .logo img{width:88%;height:88%;object-fit:contain}
+  header .htext{flex:1}
+  header h1{
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;
+    font-size:clamp(1.45rem,4.2vw,2.1rem);line-height:1.02;text-transform:uppercase;letter-spacing:.5px;
+  }
+  header p{color:var(--steel);font-size:.92rem;margin-top:4px}
+  @media(max-width:480px){
+    header{flex-direction:column;text-align:center;border-left:none;border-top:5px solid var(--hot);padding:14px 0 0}
+    header .htext{text-align:center}
+  }
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+  .card h2{
+    font-family:'Barlow Condensed',sans-serif;font-weight:600;text-transform:uppercase;
+    letter-spacing:1px;font-size:1.05rem;color:var(--steel);
+    border-bottom:2px solid var(--zinc);padding-bottom:8px;margin-bottom:14px;
+  }
+  label{display:block;font-weight:600;font-size:.85rem;margin:12px 0 5px}
+  label small{font-weight:400;color:#6b7a87}
+  input,select{
+    width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:7px;
+    font-family:'Barlow',sans-serif;font-size:1rem;background:#FBFCFD;color:var(--ink);
+  }
+  input:focus,select:focus{outline:2px solid var(--hot);outline-offset:1px;border-color:var(--hot)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  /* sketsa atap */
+  .sketch{background:#F4F7F8;border:1px dashed var(--line);border-radius:8px;margin-top:14px;padding:8px}
+  .sketch svg{display:block;width:100%;height:auto}
+
+  button{
+    width:100%;margin-top:18px;padding:13px;border:none;border-radius:8px;cursor:pointer;
+    background:var(--hot);color:#fff;font-family:'Barlow Condensed',sans-serif;
+    font-size:1.25rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;
+    transition:transform .08s ease, background .15s;
+  }
+  button:hover{background:#c94a08}
+  button:active{transform:scale(.985)}
+
+  /* hasil */
+  #hasil{display:none}
+  .res-item{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px;background:#FBFCFD}
+  .res-item .tag{
+    font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.8rem;text-transform:uppercase;
+    letter-spacing:1.2px;color:var(--hot);
+  }
+  .res-item .big{font-size:1.45rem;font-weight:700;margin:2px 0}
+  .res-item .big span{font-size:.95rem;font-weight:500;color:var(--steel)}
+  .res-item .spec{font-size:.86rem;color:#46535f;line-height:1.45}
+  .luas-band{
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;
+    background:var(--ink);color:#fff;border-radius:8px;padding:12px 16px;margin-bottom:12px;
+  }
+  .luas-band b{font-size:1.5rem;font-family:'Barlow Condensed',sans-serif}
+  .luas-band small{color:#AFC2D2}
+  ul.pendukung{list-style:none}
+  ul.pendukung li{
+    display:flex;justify-content:space-between;gap:10px;padding:8px 2px;
+    border-bottom:1px dashed var(--line);font-size:.92rem;
+  }
+  ul.pendukung li:last-child{border-bottom:none}
+  ul.pendukung li b{white-space:nowrap}
+  .note{font-size:.8rem;color:#6b7a87;margin-top:12px;line-height:1.5}
+  .note b{color:var(--steel)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><img src="data:image/png;base64,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" alt="Logo Primaland Corp"></div>
+    <div class="htext">
+      <h1><span style="color:var(--hot)">NUSANDHANA</span> Baja Ringan<br>Primaland</h1>
+      <p>Kalkulator kebutuhan Kanal C75, Reng 30, penutup atap &amp; aksesoris &mdash; standar batang 6 meter</p>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- ============ INPUT ============ -->
+    <div class="card">
+      <h2>Data Atap</h2>
+
+      <div class="row2">
+        <div>
+          <label>Panjang Bangunan <small>(m)</small></label>
+          <input type="number" id="panjang" value="12" min="1" step="0.1">
+        </div>
+        <div>
+          <label>Lebar Bangunan <small>(m)</small></label>
+          <input type="number" id="lebar" value="8" min="1" step="0.1">
+        </div>
+      </div>
+
+      <div class="row2">
+        <div>
+          <label>Kemiringan <small>(derajat)</small></label>
+          <input type="number" id="derajat" value="30" min="5" max="60" step="1">
+        </div>
+        <div>
+          <label>Overstek <small>(m / sisi)</small></label>
+          <input type="number" id="overstek" value="0.6" min="0" step="0.1">
+        </div>
+      </div>
+
+      <div class="row2">
+        <div>
+          <label>Jarak Antar Kuda-Kuda <small>(m)</small></label>
+          <input type="number" id="jarakKuda" value="1.2" min="0.6" max="2" step="0.1">
+        </div>
+        <div>
+          <label>Bentuk Rangka Kuda-Kuda</label>
+          <select id="rangka">
+            <option value="standar">Standar</option>
+            <option value="kremona">Kremona</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Bentuk Atap</label>
+      <select id="bentuk">
+        <option value="pelana">Pelana</option>
+        <option value="setengah">1/2 Pelana (Sandar)</option>
+        <option value="limas">Limas (Perisai)</option>
+      </select>
+
+      <label>Material Penutup Atap</label>
+      <select id="material">
+        <option value="metal_pasir">Genteng Metal Pasir</option>
+        <option value="metal">Genteng Metal (Polos)</option>
+        <option value="tanah_liat">Genteng Tanah Liat</option>
+        <option value="spandek_pasir">Spandek Pasir</option>
+        <option value="spandek_polos">Spandek Polos</option>
+        <option value="bitumen">Atap Bitumen (Gelombang)</option>
+        <option value="pvc">Atap PVC</option>
+      </select>
+
+      <div class="sketch">
+        <svg id="svgAtap" viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" aria-label="Sketsa penampang atap"></svg>
+      </div>
+
+      <button onclick="hitung()">Hitung Kebutuhan</button>
+    </div>
+
+    <!-- ============ HASIL ============ -->
+    <div class="card" id="hasil">
+      <h2>Hasil Perhitungan</h2>
+
+      <div class="luas-band">
+        <div><small>LUAS AKHIR ATAP (BIDANG MIRING)</small><br><b id="rLuas">&ndash;</b></div>
+        <div style="text-align:right"><small>Luas datar + overstek</small><br><span id="rLuasDatar">&ndash;</span></div>
+      </div>
+
+      <div class="res-item">
+        <div class="tag">1 &middot; Kanal C75</div>
+        <div class="big" id="rKanal">&ndash;</div>
+        <div class="spec" id="rKanalSpec"></div>
+      </div>
+
+      <div class="res-item">
+        <div class="tag">2 &middot; Reng 30</div>
+        <div class="big" id="rReng">&ndash;</div>
+        <div class="spec" id="rRengSpec"></div>
+      </div>
+
+      <div class="res-item">
+        <div class="tag">3 &middot; Penutup Atap</div>
+        <div class="big" id="rAtap">&ndash;</div>
+        <div class="spec" id="rAtapSpec"></div>
+      </div>
+
+      <div class="res-item">
+        <div class="tag">4 &middot; Material Pendukung</div>
+        <ul class="pendukung" id="rPendukung"></ul>
+      </div>
+
+      <div class="note" id="rNote"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ====================== DATA MATERIAL ====================== */
+const MAT = {
+  metal_pasir : {nama:'Genteng Metal Pasir', jarakReng:0.385, beban:'ringan (±7 kg/m²)',
+    kanalTebal:'0,65 mm', kanalAZ:'AZ100', rengTebal:'0,40 mm', rengAZ:'AZ100',
+    tipe:'lembar', efektif:0.62, deskripsi:'lembar 2×4 daun (efektif ±0,62 m²/lbr)', sekrupAtap:12},
+  metal : {nama:'Genteng Metal Polos', jarakReng:0.385, beban:'ringan (±5 kg/m²)',
+    kanalTebal:'0,60 – 0,65 mm', kanalAZ:'AZ70 – AZ100', rengTebal:'0,40 mm', rengAZ:'AZ70 – AZ100',
+    tipe:'lembar', efektif:0.62, deskripsi:'lembar 2×4 daun (efektif ±0,62 m²/lbr)', sekrupAtap:12},
+  tanah_liat : {nama:'Genteng Tanah Liat', jarakReng:0.265, beban:'berat (±40–45 kg/m²)',
+    kanalTebal:'0,75 – 1,00 mm', kanalAZ:'AZ100', rengTebal:'0,45 mm', rengAZ:'AZ100',
+    tipe:'buah', per_m2:25, deskripsi:'±25 bh/m² (plentong/kodok, interlock tanpa sekrup)', sekrupAtap:0},
+  spandek_pasir : {nama:'Spandek Pasir', jarakReng:0.60, beban:'ringan (±6 kg/m²)',
+    kanalTebal:'0,65 mm', kanalAZ:'AZ100', rengTebal:'0,40 mm', rengAZ:'AZ100',
+    tipe:'lajur', lebarEfektif:1.00, deskripsi:'tebal 0,30 – 0,40 mm, lebar efektif ±1,00 m', sekrupAtap:8},
+  spandek_polos : {nama:'Spandek Polos', jarakReng:0.60, beban:'ringan (±4–5 kg/m²)',
+    kanalTebal:'0,60 – 0,65 mm', kanalAZ:'AZ70 – AZ100', rengTebal:'0,40 mm', rengAZ:'AZ70 – AZ100',
+    tipe:'lajur', lebarEfektif:1.00, deskripsi:'tebal 0,25 – 0,40 mm, lebar efektif ±1,00 m', sekrupAtap:6},
+  bitumen : {nama:'Atap Bitumen Gelombang', jarakReng:0.455, beban:'ringan (±6 kg/m²)',
+    kanalTebal:'0,65 mm', kanalAZ:'AZ100', rengTebal:'0,40 mm', rengAZ:'AZ100',
+    tipe:'lembar', efektif:1.56, deskripsi:'lembar 200×95 cm (efektif ±1,56 m²/lbr)', sekrupAtap:15},
+  pvc : {nama:'Atap PVC', jarakReng:0.50, beban:'ringan (±4–5 kg/m²)',
+    kanalTebal:'0,60 – 0,65 mm', kanalAZ:'AZ70 – AZ100', rengTebal:'0,40 mm', rengAZ:'AZ70 – AZ100',
+    tipe:'lajur', lebarEfektif:0.80, deskripsi:'lebar efektif ±0,80 m (sesuaikan merek)', sekrupAtap:6},
+};
+
+const BATANG = 6; // panjang standar batang (m)
+const fmt = (n,d=2)=> n.toLocaleString('id-ID',{minimumFractionDigits:0,maximumFractionDigits:d});
+
+/* ====================== SKETSA SVG ====================== */
+function gambarSketsa(){
+  const deg = +document.getElementById('derajat').value || 30;
+  const bentuk = document.getElementById('bentuk').value;
+  const svg = document.getElementById('svgAtap');
+  const rad = deg*Math.PI/180;
+  const W=300, base=105, x0=40, x1=260, span=x1-x0;
+  let h, el='';
+  const wall = `<rect x="${x0+18}" y="${base}" width="${span-36}" height="16" fill="#C9D2D8"/>`;
+
+  if(bentuk==='setengah'){
+    h = Math.min(span*Math.tan(rad), 85);
+    el = `<polygon points="${x0},${base} ${x1},${base} ${x1},${base-h}" fill="#3A5670" opacity=".15" stroke="#3A5670" stroke-width="2"/>
+          <line x1="${x0}" y1="${base}" x2="${x1}" y2="${base-h}" stroke="#E8590C" stroke-width="3"/>`;
+  } else {
+    h = Math.min((span/2)*Math.tan(rad), 85);
+    el = `<polygon points="${x0},${base} ${x1},${base} ${W/2},${base-h}" fill="#3A5670" opacity=".15" stroke="#3A5670" stroke-width="2"/>
+          <line x1="${x0}" y1="${base}" x2="${W/2}" y2="${base-h}" stroke="#E8590C" stroke-width="3"/>
+          <line x1="${x1}" y1="${base}" x2="${W/2}" y2="${base-h}" stroke="#E8590C" stroke-width="3"/>`;
+    if(bentuk==='limas'){
+      el += `<line x1="${x0+40}" y1="${base}" x2="${W/2-30}" y2="${base-h+6}" stroke="#3A5670" stroke-width="1.5" stroke-dasharray="4 3"/>
+             <line x1="${x1-40}" y1="${base}" x2="${W/2+30}" y2="${base-h+6}" stroke="#3A5670" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+    }
+  }
+  svg.innerHTML = wall + el +
+    `<path d="M ${x0+34} ${base} A 34 34 0 0 0 ${x0+34*Math.cos(rad)} ${base-34*Math.sin(rad)}" fill="none" stroke="#1C2733" stroke-width="1.5"/>
+     <text x="${x0+42}" y="${base-9}" font-family="Barlow Condensed" font-size="14" font-weight="600" fill="#1C2733">${deg}&#176;</text>`;
+}
+['derajat','bentuk'].forEach(id=>document.getElementById(id).addEventListener('input',gambarSketsa));
+gambarSketsa();
+
+/* ====================== PERHITUNGAN ====================== */
+function hitung(){
+  const P0 = +document.getElementById('panjang').value;
+  const L0 = +document.getElementById('lebar').value;
+  const deg = +document.getElementById('derajat').value;
+  const ov = +document.getElementById('overstek').value || 0;
+  const bentuk = document.getElementById('bentuk').value;
+  const m = MAT[document.getElementById('material').value];
+
+  if(!P0 || !L0 || !deg){ alert('Lengkapi panjang, lebar, dan kemiringan atap.'); return; }
+
+  const rad = deg*Math.PI/180, cos = Math.cos(rad), tan = Math.tan(rad);
+  // dimensi termasuk overstek (overstek di kedua sisi)
+  const P = P0 + 2*ov;
+  const L = L0 + 2*ov;
+  const luasDatar = P*L;
+  const luasMiring = luasDatar/cos;
+
+  const jarakKuda = +document.getElementById('jarakKuda').value || 1.2;
+  const rangka = document.getElementById('rangka').value;
+
+  // ---------- Kanal C75 ----------
+  // faktor dasar pemakaian kanal per m² bidang miring pada jarak kuda-kuda 1,2 m
+  // standar = web sederhana ±4 m/m² | kremona = web diagonal penuh ±4,6 m/m²
+  let fKanal = (rangka==='kremona' ? 4.6 : 4.0) * (1.2/jarakKuda);
+  if(bentuk==='limas') fKanal *= 1.12; // tambahan jurai + waste potongan
+  const kanalMeter = luasMiring * fKanal;
+  const kanalBatang = Math.ceil(kanalMeter/BATANG);
+  const jmlKudaKuda = Math.ceil(P/jarakKuda)+1;
+
+  // ---------- Reng 30 ----------
+  const wasteReng = bentuk==='limas' ? 0.10 : 0.05;
+  const rengMeter = (luasMiring/m.jarakReng)*(1+wasteReng);
+  const rengBatang = Math.ceil(rengMeter/BATANG);
+
+  // ---------- Penutup Atap ----------
+  let atapBig='', atapSpec='';
+  const sisiMiring = bentuk==='setengah' ? L/cos : (L/2)/cos; // panjang sisi miring
+  if(m.tipe==='lembar'){
+    const lembar = Math.ceil((luasMiring/m.efektif)*1.05);
+    atapBig = `${fmt(lembar)} <span>lembar</span>`;
+    atapSpec = `${m.nama} &mdash; ${m.deskripsi}. Termasuk cadangan potongan ±5%.`;
+  } else if(m.tipe==='buah'){
+    const buah = Math.ceil(luasMiring*m.per_m2*1.05);
+    atapBig = `${fmt(buah)} <span>buah</span>`;
+    atapSpec = `${m.nama} &mdash; ${m.deskripsi}. Termasuk cadangan ±5%.`;
+  } else { // lajur (spandek / pvc)
+    if(bentuk==='limas'){
+      const mLari = Math.ceil((luasMiring/m.lebarEfektif)*1.10);
+      atapBig = `&plusmn; ${fmt(mLari)} <span>m lari</span>`;
+      atapSpec = `${m.nama} &mdash; ${m.deskripsi}. Bentuk limas: waste potongan miring ±10% sudah dihitung. Panjang potongan maks. mengikuti sisi miring ±${fmt(sisiMiring)} m.`;
+    } else {
+      const sisi = bentuk==='setengah' ? 1 : 2;
+      const lajurPerSisi = Math.ceil(P/m.lebarEfektif);
+      const totalLembar = lajurPerSisi*sisi;
+      atapBig = `${fmt(totalLembar)} <span>lembar @ ${fmt(sisiMiring)} m</span>`;
+      atapSpec = `${m.nama} &mdash; ${m.deskripsi}. ${lajurPerSisi} lajur per sisi &times; ${sisi} sisi, panjang lembar = sisi miring ${fmt(sisiMiring)} m (&plusmn; ${fmt(totalLembar*sisiMiring)} m lari total).`;
+    }
+  }
+
+  // ---------- Pendukung ----------
+  const sekrupTruss = Math.ceil(luasMiring*18/100)*100;            // sekrup 12-14×20 truss
+  const sekrupAtap  = m.sekrupAtap ? Math.ceil(luasMiring*m.sekrupAtap/100)*100 : 0;
+  const dynabolt = jmlKudaKuda*4;
+
+  // panjang nok / bubungan
+  let nokLen=0, nokLabel='Nok / bubungan';
+  if(bentuk==='pelana'){ nokLen = P; }
+  else if(bentuk==='setengah'){ nokLen = P; nokLabel='Flashing / nok pinggir atas'; }
+  else { // limas: bubungan atas + 4 jurai
+    const a=Math.max(P,L), b=Math.min(P,L);
+    const ridge = a-b;
+    const jurai = Math.sqrt( 2*Math.pow(b/2,2) + Math.pow((b/2)*tan,2) );
+    nokLen = ridge + 4*jurai;
+    nokLabel='Nok bubungan + nok jurai';
+  }
+  const nokPcs = Math.ceil((nokLen/0.8)*1.05); // efektif ±0,8 m/pcs
+
+  let pendukung = [
+    [nokLabel, `&plusmn; ${fmt(nokLen)} m (&plusmn;${fmt(nokPcs,0)} pcs efektif 0,8 m)`],
+    ['Sekrup truss 12-14&times;20 (rangka)', `&plusmn; ${fmt(sekrupTruss,0)} pcs`],
+  ];
+  if(sekrupAtap) pendukung.push(['Sekrup atap 10-16&times;50 / baut roofing', `&plusmn; ${fmt(sekrupAtap,0)} pcs`]);
+  else pendukung.push(['Sekrup atap', 'Tidak perlu (genteng interlock di reng)']);
+  pendukung.push(['Dynabolt 10 &times; 77 mm (dudukan kuda-kuda)', `&plusmn; ${fmt(dynabolt,0)} pcs`]);
+  pendukung.push([`Jumlah kuda-kuda (jarak ${fmt(jarakKuda)} m)`, `&plusmn; ${fmt(jmlKudaKuda,0)} unit`]);
+  if(bentuk!=='setengah') pendukung.push(['Talang jurai (khusus limas) / lisplank', bentuk==='limas' ? 'Cek kebutuhan talang jurai dalam' : `Lisplank &plusmn; ${fmt(2*P+2*L)} m keliling`]);
+
+  // ---------- Render ----------
+  document.getElementById('hasil').style.display='block';
+  document.getElementById('rLuas').innerHTML = `${fmt(luasMiring)} m&sup2;`;
+  document.getElementById('rLuasDatar').innerHTML = `${fmt(luasDatar)} m&sup2; &middot; ${fmt(P)} &times; ${fmt(L)} m`;
+
+  document.getElementById('rKanal').innerHTML = `${fmt(kanalBatang,0)} <span>batang @ 6 m</span>`;
+  document.getElementById('rKanalSpec').innerHTML =
+    `Kanal C75 &times; <b>${m.kanalTebal}</b>, lapisan <b>${m.kanalAZ}</b> &mdash; menyesuaikan beban atap ${m.beban}. `+
+    `Rangka <b>${rangka==='kremona' ? 'Kremona (web diagonal penuh)' : 'Standar'}</b>, jarak kuda-kuda <b>${fmt(jarakKuda)} m</b>, `+
+    `pemakaian &plusmn;${fmt(fKanal)} m/m&sup2; (kuda-kuda + web + ikatan angin)${bentuk==='limas' ? ', termasuk waste jurai' : ''}.`;
+
+  document.getElementById('rReng').innerHTML = `${fmt(rengBatang,0)} <span>batang @ 6 m</span>`;
+  document.getElementById('rRengSpec').innerHTML =
+    `Reng 30 &times; <b>${m.rengTebal}</b>, lapisan <b>${m.rengAZ}</b> &mdash; jarak reng <b>${fmt(m.jarakReng*100,1)} cm</b> untuk ${m.nama}. Termasuk waste ${wasteReng*100}%.`;
+
+  document.getElementById('rAtap').innerHTML = atapBig;
+  document.getElementById('rAtapSpec').innerHTML = atapSpec;
+
+  document.getElementById('rPendukung').innerHTML =
+    pendukung.map(([k,v])=>`<li><span>${k}</span><b>${v}</b></li>`).join('');
+
+  document.getElementById('rNote').innerHTML =
+    `<b>Catatan:</b> Hasil di atas adalah estimasi kebutuhan material berdasarkan rumus praktis lapangan `+
+    `(luas miring = luas datar &divide; cos ${deg}&deg;). Untuk genteng berat (tanah liat) wajib kanal min. 0,75 mm AZ100 `+
+    `dan jarak kuda-kuda dirapatkan &plusmn;1,0&ndash;1,2 m. Verifikasi akhir tetap mengikuti gambar kerja / kondisi lapangan.`;
+
+  if(window.innerWidth<720) document.getElementById('hasil').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
